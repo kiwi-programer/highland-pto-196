@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Highland Elementary PTO — District 196</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #111111;
+    --black-deep: #0a0000;
+    --red: #cc1a1a;
+    --red-bright: #ff4444;
+    --cream: #f9f5f5;
+    --white: #ffffff;
+    --gray-light: #f0eaea;
+    --gray-mid: #a09090;
+    --text: #111111;
+    --text-soft: #4a3030;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); overflow-x: hidden; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2.5rem; height: 68px;
+    background: rgba(10,10,10,0.97);
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid var(--red);
+  }
+  .nav-brand { display: flex; align-items: center; gap: .7rem; text-decoration: none; }
+  .nav-badge { width: 38px; height: 38px; border-radius: 50%; background: var(--red); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-weight: 900; font-size: .85rem; color: var(--white); flex-shrink: 0; }
+  .nav-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--white); line-height: 1.15; }
+  .nav-title span { color: var(--red-bright); display: block; font-size: .7rem; font-family: 'DM Sans', sans-serif; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; }
+  .nav-links { display: flex; list-style: none; }
+  .nav-links a { display: block; padding: .5rem .9rem; color: rgba(255,255,255,.8); text-decoration: none; font-size: .82rem; font-weight: 500; letter-spacing: .03em; transition: color .2s; text-transform: uppercase; }
+  .nav-links a:hover { color: var(--red-bright); }
+  .nav-cta { background: var(--red); color: var(--white) !important; border-radius: 4px; font-weight: 600 !important; padding: .45rem 1.1rem !important; }
+  .nav-cta:hover { background: var(--red-bright) !important; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    background: linear-gradient(160deg, rgba(10,0,0,0.93) 0%, rgba(10,0,0,0.75) 60%, rgba(10,0,0,0.5) 100%),
+      url('https://images.unsplash.com/photo-1577896851231-70ef18881754?w=1600&auto=format&fit=crop') center/cover no-repeat;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 120px 2.5rem 80px; position: relative; overflow: hidden;
+  }
+  .hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 120px; background: linear-gradient(to bottom, transparent, var(--cream)); }
+  .hero-inner { max-width: 720px; }
+  .hero-eyebrow { display: inline-flex; align-items: center; gap: .5rem; background: var(--red); color: var(--white); font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; padding: .35rem .9rem; border-radius: 3px; margin-bottom: 1.4rem; animation: fadeUp .6s ease both; }
+  .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.8rem, 6vw, 5rem); color: var(--white); line-height: 1.08; margin-bottom: 1.4rem; animation: fadeUp .6s .12s ease both; }
+  .hero h1 em { color: var(--red-bright); font-style: normal; }
+  .hero-sub { color: rgba(255,255,255,.82); font-size: 1.1rem; line-height: 1.65; max-width: 520px; margin-bottom: 2.2rem; animation: fadeUp .6s .22s ease both; }
+  .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; animation: fadeUp .6s .32s ease both; }
+  .hero-stats { position: absolute; bottom: 130px; right: 2.5rem; display: flex; gap: 1.5rem; animation: fadeUp .6s .45s ease both; }
+  .stat { text-align: center; background: rgba(255,255,255,.1); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.2); border-radius: 8px; padding: 1rem 1.4rem; color: var(--white); }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; line-height: 1; color: var(--red-bright); }
+  .stat-lbl { font-size: .72rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; opacity: .8; margin-top: .2rem; }
+
+  /* BUTTONS */
+  .btn-primary { background: var(--red); color: var(--white); padding: .85rem 2rem; border-radius: 5px; font-weight: 700; font-size: .9rem; text-decoration: none; letter-spacing: .04em; text-transform: uppercase; transition: transform .2s, box-shadow .2s, background .2s; border: none; cursor: pointer; display: inline-block; }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(204,26,26,.45); background: var(--red-bright); }
+  .btn-ghost { background: transparent; color: var(--white); padding: .85rem 2rem; border-radius: 5px; font-weight: 600; font-size: .9rem; text-decoration: none; letter-spacing: .04em; text-transform: uppercase; border: 2px solid rgba(255,255,255,.45); transition: border-color .2s; display: inline-block; }
+  .btn-ghost:hover { border-color: var(--white); }
+  .btn-email { display: inline-flex; align-items: center; gap: .5rem; background: transparent; border: 2px solid var(--red); color: var(--red-bright); padding: .85rem 2rem; border-radius: 5px; font-weight: 600; font-size: .88rem; letter-spacing: .05em; text-transform: uppercase; text-decoration: none; transition: background .2s, color .2s; }
+  .btn-email:hover { background: var(--red); color: var(--white); }
+
+  /* LAYOUT */
+  .section { padding: 5rem 2.5rem; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .section-label { display: inline-block; font-size: .7rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--red); margin-bottom: .7rem; }
+  h2 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 3.5vw, 2.8rem); color: var(--black); line-height: 1.15; margin-bottom: 1rem; }
+  .lead { color: var(--text-soft); font-size: 1.05rem; line-height: 1.7; max-width: 600px; }
+
+  /* MISSION */
+  .mission-band { background: var(--black); padding: 5rem 2.5rem; position: relative; overflow: hidden; }
+  .mission-band::before { content: '"'; position: absolute; top: -1rem; left: 1.5rem; font-family: 'Playfair Display', serif; font-size: 14rem; color: rgba(204,26,26,.08); line-height: 1; pointer-events: none; }
+  .mission-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+  .mission-text .section-label { color: var(--red-bright); }
+  .mission-text h2 { color: var(--white); }
+  .mission-text p { color: rgba(255,255,255,.75); line-height: 1.75; margin-bottom: 1rem; }
+  .mission-pillars { list-style: none; display: flex; flex-direction: column; gap: .7rem; margin-top: 1.5rem; }
+  .mission-pillars li { display: flex; align-items: flex-start; gap: .7rem; color: rgba(255,255,255,.85); font-size: .95rem; }
+  .mission-pillars li::before { content: ''; width: 6px; height: 6px; background: var(--red); border-radius: 50%; flex-shrink: 0; margin-top: .5rem; }
+  .vision-card { background: rgba(255,255,255,.06); border: 1px solid rgba(204,26,26,.35); border-radius: 12px; padding: 2.5rem; }
+  .vision-label { color: var(--red-bright); font-size: .7rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; margin-bottom: .8rem; }
+  .vision-card p { color: rgba(255,255,255,.8); line-height: 1.75; font-size: 1rem; }
+
+  /* MEETINGS */
+  .meetings-section { background: var(--white); }
+  .meetings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; margin-top: 3rem; }
+  .meeting-dates { display: flex; flex-direction: column; gap: .7rem; }
+  .meeting-date-card { display: flex; align-items: center; gap: 1rem; background: var(--cream); border-radius: 10px; padding: 1rem 1.4rem; border-left: 4px solid var(--red); transition: transform .2s; }
+  .meeting-date-card:hover { transform: translateX(4px); }
+  .mdate-month { font-size: .65rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--red); }
+  .mdate-day { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--black); line-height: 1; }
+  .mdate-info { color: var(--text-soft); font-size: .88rem; }
+  .meeting-meta { background: var(--black); border-radius: 12px; padding: 2rem; }
+  .meeting-meta h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 1rem; color: var(--red-bright); }
+  .meta-item { display: flex; gap: .7rem; align-items: flex-start; margin-bottom: .8rem; font-size: .9rem; color: rgba(255,255,255,.8); }
+  .meta-icon { font-size: 1rem; flex-shrink: 0; margin-top: .05rem; }
+
+  /* COMMITTEES */
+  .committees-section { background: var(--cream); }
+  .committees-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+  .committee-card { background: var(--white); border-radius: 12px; padding: 2rem; border-top: 4px solid var(--red); transition: transform .25s, box-shadow .25s; }
+  .committee-card:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(0,0,0,.1); }
+  .committee-icon { font-size: 2rem; margin-bottom: 1rem; }
+  .committee-card h3 { font-family: 'Playfair Display', serif; font-size: 1.25rem; color: var(--black); margin-bottom: .6rem; }
+  .committee-card p { color: var(--text-soft); font-size: .9rem; line-height: 1.6; margin-bottom: 1.2rem; }
+  .committee-activities { list-style: none; margin-bottom: 1.2rem; }
+  .committee-activities li { font-size: .83rem; color: var(--text-soft); padding: .15rem 0 .15rem 1rem; position: relative; }
+  .committee-activities li::before { content: '→'; position: absolute; left: 0; color: var(--red); font-size: .75rem; }
+  .committee-contact { font-size: .82rem; color: var(--black); font-weight: 600; }
+  .committee-contact a { color: var(--red); text-decoration: none; }
+
+  /* TEAM */
+  .team-section { background: var(--white); }
+  .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 2rem; margin-top: 3rem; }
+  .team-card { text-align: center; background: var(--cream); border-radius: 12px; padding: 2rem 1.5rem; transition: transform .25s, box-shadow .25s; }
+  .team-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.1); }
+  .team-avatar { width: 80px; height: 80px; border-radius: 50%; background: var(--black); margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 900; color: var(--red-bright); border: 3px solid var(--red); }
+  .team-name { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--black); margin-bottom: .25rem; }
+  .team-role { font-size: .75rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--red); margin-bottom: .8rem; }
+  .team-bio { font-size: .82rem; color: var(--text-soft); line-height: 1.6; }
+
+  /* FUN RUN */
+  .funrun-section {
+    background: linear-gradient(135deg, rgba(10,0,0,0.96) 0%, rgba(10,0,0,0.9) 100%),
+      url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1400&auto=format&fit=crop') center/cover no-repeat;
+    padding: 5rem 2.5rem;
+  }
+  .funrun-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+  .funrun-section .section-label { color: var(--red-bright); }
+  .funrun-section h2 { color: var(--white); }
+  .funrun-section .lead { color: rgba(255,255,255,.75); }
+  .funrun-cards { display: flex; flex-direction: column; gap: 1rem; }
+  .funrun-card { background: rgba(255,255,255,.08); border: 1px solid rgba(204,26,26,.35); border-radius: 10px; padding: 1.5rem; }
+  .funrun-card h4 { color: var(--red-bright); font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: .5rem; }
+  .funrun-card p { color: rgba(255,255,255,.75); font-size: .9rem; line-height: 1.6; }
+
+  /* EVENTS */
+  .events-section { background: var(--cream); }
+  .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.2rem; margin-top: 2.5rem; }
+  .event-pill { background: var(--white); border-radius: 10px; padding: 1.3rem 1.5rem; display: flex; align-items: flex-start; gap: .9rem; transition: transform .2s, box-shadow .2s; border-bottom: 3px solid transparent; }
+  .event-pill:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.08); border-bottom-color: var(--red); }
+  .event-emoji { font-size: 1.5rem; flex-shrink: 0; margin-top: .1rem; }
+  .event-name { font-weight: 600; color: var(--black); font-size: .9rem; margin-bottom: .2rem; }
+  .event-cat { font-size: .73rem; color: var(--gray-mid); text-transform: uppercase; letter-spacing: .08em; }
+
+  /* CTA */
+  .cta-section { background: var(--black); text-align: center; padding: 5rem 2.5rem; }
+  .cta-section h2 { color: var(--white); margin-bottom: 1rem; }
+  .cta-section p { color: rgba(255,255,255,.7); max-width: 500px; margin: 0 auto 2.5rem; line-height: 1.7; }
+  .cta-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+  /* FOOTER */
+  footer { background: #0a0000; padding: 3rem 2.5rem 2rem; color: rgba(255,255,255,.5); font-size: .83rem; }
+  .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; border-top: 1px solid rgba(255,255,255,.08); padding-top: 2rem; }
+  footer a { color: var(--red-bright); text-decoration: none; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 0 1.2rem; }
+    .nav-links { display: none; }
+    .section, .funrun-section, .mission-band { padding: 3.5rem 1.2rem; }
+    .mission-inner, .meetings-grid, .funrun-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .hero-stats { display: none; }
+    .hero { padding: 100px 1.2rem 60px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#top" class="nav-brand">
+    <div class="nav-badge">HL</div>
+    <div class="nav-title">
+      Highland PTO
+      <span>District 196 · Apple Valley, MN</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#meetings">Meetings</a></li>
+    <li><a href="#committees">Committees</a></li>
+    <li><a href="#team">Board</a></li>
+    <li><a href="#funrun">Fun Run</a></li>
+    <li><a href="#contact" class="nav-cta">Donate</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">🎓 Go Scotties! — Est. 2022</div>
+    <h1>Where <em>Community</em><br>Meets Classroom</h1>
+    <p class="hero-sub">The Highland Elementary PTO connects families, staff, and neighbors to create an exceptional learning experience for every student at Highland Elementary.</p>
+    <div class="hero-actions">
+      <a href="#committees" class="btn-primary">Get Involved</a>
+      <a href="#about" class="btn-ghost">Learn More</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">2022</div><div class="stat-lbl">Founded</div></div>
+    <div class="stat"><div class="stat-num">4</div><div class="stat-lbl">Committees</div></div>
+    <div class="stat"><div class="stat-num">5</div><div class="stat-lbl">Meetings / Year</div></div>
+  </div>
+</header>
+
+<!-- MISSION -->
+<div class="mission-band" id="about">
+  <div class="mission-inner">
+    <div class="mission-text">
+      <span class="section-label">Our Purpose</span>
+      <h2>Driven by Vision,<br>Guided by Mission</h2>
+      <p>The Highland PTO was started in the Fall of 2022 when Highland Elementary transitioned from a Site Council to a more inclusive PTO model — opening the door for greater parent and guardian participation than ever before.</p>
+      <p>The PTO's mission is to facilitate the betterment of Highland families, staff, and students.</p>
+      <ul class="mission-pillars">
+        <li>Creating an open, welcoming and supportive learning environment</li>
+        <li>Fostering pride in the school and Scottie community</li>
+        <li>Developing and strengthening the community of advocates</li>
+        <li>Offering talent and financial assistance where needed</li>
+      </ul>
+    </div>
+    <div class="vision-card">
+      <div class="vision-label">PTO Vision</div>
+      <p>The primary vision of the Highland PTO is to involve families and community members to enhance the students' education. The PTO serves as a communication liaison between the school and the family/guardian community, and as a fundraising organization for the school.</p>
+    </div>
+  </div>
+</div>
+
+<!-- MEETINGS -->
+<div class="section meetings-section" id="meetings">
+  <div class="container">
+    <div style="text-align:center; margin-bottom:.5rem;"><span class="section-label">Stay Engaged</span></div>
+    <h2 style="text-align:center;">2025–2026 Meeting Dates</h2>
+    <p class="lead" style="text-align:center; margin: 0 auto;">Join us for monthly PTO meetings — all parents, guardians, and community members are welcome!</p>
+    <div class="meetings-grid">
+      <div class="meeting-dates">
+        <div class="meeting-date-card">
+          <div><div class="mdate-month">September</div><div class="mdate-day">11</div></div>
+          <div class="mdate-info">First meeting of the school year</div>
+        </div>
+        <div class="meeting-date-card">
+          <div><div class="mdate-month">November</div><div class="mdate-day">13</div></div>
+          <div class="mdate-info">Fall updates &amp; planning</div>
+        </div>
+        <div class="meeting-date-card">
+          <div><div class="mdate-month">January</div><div class="mdate-day">15</div></div>
+          <div class="mdate-info">Officer elections</div>
+        </div>
+        <div class="meeting-date-card">
+          <div><div class="mdate-month">March</div><div class="mdate-day">12</div></div>
+          <div class="mdate-info">Spring event planning</div>
+        </div>
+        <div class="meeting-date-card">
+          <div><div class="mdate-month">May</div><div class="mdate-day">14</div></div>
+          <div class="mdate-info">Year-end celebration</div>
+        </div>
+      </div>
+      <div class="meeting-meta">
+        <h3>📍 Meeting Details</h3>
+        <div class="meta-item"><span class="meta-icon">🕕</span><span>6:00 PM – 7:30 PM</span></div>
+        <div class="meta-item"><span class="meta-icon">📚</span><span>Highland Elementary Library, Apple Valley, MN (District 196)</span></div>
+        <div class="meta-item"><span class="meta-icon">🎉</span><span>All parents, guardians, staff, and community members welcome — no RSVP needed!</span></div>
+        <div class="meta-item"><span class="meta-icon">✉️</span><span>Questions? Email <strong>highland196pto@gmail.com</strong></span></div>
+        <br>
+        <a href="mailto:highland196pto@gmail.com" class="btn-primary" style="font-size:.82rem;">Contact Us</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COMMITTEES -->
+<div class="section committees-section" id="committees">
+  <div class="container">
+    <span class="section-label">Get Involved</span>
+    <h2>Our Committees</h2>
+    <p class="lead">Whether you want to be involved in a big way or a small way, we have a spot for you. Join a committee, attend an event, or volunteer at one of our activities.</p>
+    <div class="committees-grid">
+      <div class="committee-card">
+        <div class="committee-icon">🍽️</div>
+        <h3>Hospitality</h3>
+        <p>Making Highland feel like a welcoming place through food and fellowship for staff and families.</p>
+        <ul class="committee-activities">
+          <li>Assessment &amp; Conference Meals</li>
+          <li>Kindergarten Program (April)</li>
+          <li>1st Grade Donuts (April)</li>
+          <li>5th Grade Graduation (June)</li>
+          <li>Last Day of School Events</li>
+        </ul>
+        <div class="committee-contact">Contact: <a href="mailto:ckarsky@gmail.com">Coral Karsky</a></div>
+      </div>
+      <div class="committee-card">
+        <div class="committee-icon">🏅</div>
+        <h3>School Pride</h3>
+        <p>Creating pride, identity, and community within the Highland Scotties family.</p>
+        <ul class="committee-activities">
+          <li>Picture Day</li>
+          <li>Fire Safety Week</li>
+          <li>Special Friends Day</li>
+          <li>Apparel Store</li>
+          <li>Book Fair</li>
+        </ul>
+        <div class="committee-contact">Contact: <a href="mailto:kpgraff@gmail.com">Kaitlin Graff</a></div>
+      </div>
+      <div class="committee-card">
+        <div class="committee-icon">🎉</div>
+        <h3>Social Events</h3>
+        <p>Building relationships with parents, the local community, and Highland staff through fun events.</p>
+        <ul class="committee-activities">
+          <li>Restaurant Nights (Culver's, Mason Jar…)</li>
+          <li>Back to School Night</li>
+          <li>Highland Family Fun Night (Spring)</li>
+        </ul>
+        <div class="committee-contact">Contact: <a href="mailto:kwthompson53@gmail.com">Kyle Thompson</a></div>
+      </div>
+      <div class="committee-card">
+        <div class="committee-icon">💰</div>
+        <h3>Fundraising</h3>
+        <p>Raising funds to support Highland Elementary students, teachers, and programs all year long.</p>
+        <ul class="committee-activities">
+          <li>Donation Letters</li>
+          <li>Box Tops for Education</li>
+          <li>Mabel's Labels</li>
+          <li>Recurring Donations</li>
+          <li>Family Fun Night</li>
+        </ul>
+        <div class="committee-contact">Contact: <a href="mailto:nathan.s.simms@gmail.com">Nate Simms</a></div>
+      </div>
+    </div>
+    <div style="margin-top:2.5rem; background:var(--white); border-radius:12px; padding:2rem; display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap;">
+      <div>
+        <strong style="color:var(--black);">Want to help but not sure where to start?</strong><br>
+        <span style="color:var(--text-soft); font-size:.9rem;">Email us to be added to the volunteer list and get notified when help is needed at events.</span>
+      </div>
+      <a href="mailto:highland196pto@gmail.com" class="btn-primary" style="flex-shrink:0; font-size:.82rem;">Join the List</a>
+    </div>
+  </div>
+</div>
+
+<!-- TEAM -->
+<div class="section team-section" id="team">
+  <div class="container">
+    <span class="section-label">Leadership</span>
+    <h2>Meet the Executive Board</h2>
+    <p class="lead">Your 2025–2026 Highland PTO officers — dedicated parents committed to making Highland the best it can be.</p>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-avatar">KW</div>
+        <div class="team-name">Kim Wilson</div>
+        <div class="team-role">President</div>
+        <div class="team-bio">Former high school teacher, now works at Highland. Originally from New Zealand (2014). Mom to Ivy (3rd), Theo (8th), and Harry (6th).</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">KT</div>
+        <div class="team-name">Kyle Thompson</div>
+        <div class="team-role">Vice President</div>
+        <div class="team-bio">Organized the 2023 Color Run. Sits on a District 196 Council. Dad to a 3rd grader and a Kindergartener. Go Scotties!</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">NS</div>
+        <div class="team-name">Nate Simms</div>
+        <div class="team-role">Treasurer</div>
+        <div class="team-bio">Former Site Council Parent Leader. Serves on Superintendent Parent Leader Forum and Curriculum &amp; Instruction Advisory Council.</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">KG</div>
+        <div class="team-name">Kaitlin Graff</div>
+        <div class="team-role">Secretary</div>
+        <div class="team-bio">Second term in this role. Mom to Ryland (8th), Braeden (5th), and Amelia (2nd). Thrilled to be part of this incredible community!</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">CK</div>
+        <div class="team-name">Coral Karsky</div>
+        <div class="team-role">Communications</div>
+        <div class="team-bio">Mom to three boys, two of whom attend Highland. Also volunteers as a substitute teacher and field trip chaperone!</div>
+      </div>
+    </div>
+    <p style="margin-top:2rem; color:var(--text-soft); font-size:.9rem;">
+      Interested in running for an officer position? Elections are held in <strong>January</strong> and each position serves a 2-year term.
+      <a href="mailto:highland196pto@gmail.com" style="color:var(--red);">Email us for details.</a>
+    </p>
+  </div>
+</div>
+
+<!-- FUN RUN -->
+<div class="funrun-section" id="funrun">
+  <div class="funrun-inner">
+    <div>
+      <span class="section-label">Annual Event</span>
+      <h2>2025 Fun Run</h2>
+      <p class="lead">Our biggest event of the year! The Highland Fun Run brings together students, families, and staff for a day of running, laughing, and raising funds for our school.</p>
+      <div style="margin-top:2rem; display:flex; gap:1rem; flex-wrap:wrap;">
+        <a href="https://www.signupgenius.com/go/5080E4BADAF29AAFF2-55633779-highland#/" target="_blank" class="btn-primary">Volunteer Sign-Up</a>
+        <a href="mailto:highland196pto@gmail.com" class="btn-ghost">Get Updates</a>
+      </div>
+    </div>
+    <div class="funrun-cards">
+      <div class="funrun-card">
+        <h4>🏃 Fun Run</h4>
+        <p>Stay tuned for all the details as they come together. Go Scotties! Volunteer opportunities are already open — many hands make this event a success.</p>
+      </div>
+      <div class="funrun-card">
+        <h4>🎁 Silent Auction</h4>
+        <p>A $10,000 auction with every item starting at just $1! Bigger and better than ever — don't miss out when it goes live!</p>
+      </div>
+      <div class="funrun-card">
+        <h4>🎟️ Ticket Presale</h4>
+        <p>Save time by preordering your Fun Run tickets! Available in bundles of 10 or 20, ready for Will Call pickup on the night of the event.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EVENTS -->
+<div class="section events-section" id="events">
+  <div class="container">
+    <span class="section-label">Throughout the Year</span>
+    <h2>PTO Events &amp; Activities</h2>
+    <p class="lead">From restaurant nights to the Book Fair — there's always something happening at Highland!</p>
+    <div class="events-grid">
+      <div class="event-pill"><span class="event-emoji">📚</span><div><div class="event-name">Book Fair</div><div class="event-cat">School Pride</div></div></div>
+      <div class="event-pill"><span class="event-emoji">🍝</span><div><div class="event-name">Restaurant Nights</div><div class="event-cat">Social Events</div></div></div>
+      <div class="event-pill"><span class="event-emoji">🎭</span><div><div class="event-name">Back to School Night</div><div class="event-cat">Social Events</div></div></div>
+      <div class="event-pill"><span class="event-emoji">🌟</span><div><div class="event-name">Family Fun Night</div><div class="event-cat">Social Events</div></div></div>
+      <div class="event-pill"><span class="event-emoji">🍩</span><div><div class="event-name">1st Grade Donuts</div><div class="event-cat">Hospitality</div></div></div>
+      <div class="event-pill"><span class="event-emoji">👨‍👩‍👧</span><div><div class="event-name">Special Friends Day</div><div class="event-cat">School Pride</div></div></div>
+      <div class="event-pill"><span class="event-emoji">🎓</span><div><div class="event-name">5th Grade Graduation</div><div class="event-cat">Hospitality</div></div></div>
+      <div class="event-pill"><span class="event-emoji">🔥</span><div><div class="event-name">Fire Safety Week</div><div class="event-cat">School Pride</div></div></div>
+      <div class="event-pill"><span class="event-emoji">🍀</span><div><div class="event-name">Kindergarten Program</div><div class="event-cat">Hospitality</div></div></div>
+      <div class="event-pill"><span class="event-emoji">🏆</span><div><div class="event-name">Box Tops for Education</div><div class="event-cat">Fundraising</div></div></div>
+      <div class="event-pill"><span class="event-emoji">🏷️</span><div><div class="event-name">Mabel's Labels</div><div class="event-cat">Fundraising</div></div></div>
+      <div class="event-pill"><span class="event-emoji">🍽️</span><div><div class="event-name">Conference Meals</div><div class="event-cat">Hospitality</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-section" id="contact">
+  <h2>Ready to Make a Difference?</h2>
+  <p>Every volunteer hour, every donation, and every word of encouragement helps us build a better Highland Elementary for every student, every day.</p>
+  <div class="cta-actions">
+    <a href="https://www.paypal.com" target="_blank" class="btn-primary">Donate to Highland PTO</a>
+    <a href="mailto:highland196pto@gmail.com" class="btn-email">✉ highland196pto@gmail.com</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <strong style="color:rgba(255,255,255,.7);">Highland Elementary PTO</strong> · District 196 · Apple Valley, MN<br>
+      © 2025 Highland PTO. Prototype — content from <a href="https://www.highland196pto.com" target="_blank">highland196pto.com</a>
+    </div>
+    <div style="display:flex; gap:1.2rem; flex-wrap:wrap;">
+      <a href="https://www.highland196pto.com/home/administrative-procedures" target="_blank">Admin Procedures</a>
+      <a href="https://www.highland196pto.com/home/minutes" target="_blank">Meeting Minutes</a>
+      <a href="mailto:highland196pto@gmail.com">Email PTO</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
