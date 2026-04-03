@@ -1,0 +1,72 @@
+{
+  "organizationName": "Highland Elementary PTO",
+  "district": "District 196",
+  "location": "Apple Valley, MN",
+  "contactEmail": "highland196pto@gmail.com",
+  "donateUrl": "https://www.paypal.com/",
+  "volunteerUrl": "https://www.signupgenius.com/go/5080E4BADAF29AAFF2-55633779-highland#/",
+  "footerLinks": [
+    {
+      "label": "Admin Procedures",
+      "url": "https://www.highland196pto.com/home/administrative-procedures"
+    },
+    {
+      "label": "Meeting Minutes",
+      "url": "https://www.highland196pto.com/home/minutes"
+    }
+  ],
+  "committeeContacts": [
+    {
+      "slug": "hospitality",
+      "name": "Coral Karsky",
+      "email": "ckarsky@gmail.com"
+    },
+    {
+      "slug": "school-pride",
+      "name": "Kaitlin Graff",
+      "email": "kpgraff@gmail.com"
+    },
+    {
+      "slug": "social-events",
+      "name": "Kyle Thompson",
+      "email": "kwthompson53@gmail.com"
+    },
+    {
+      "slug": "fundraising",
+      "name": "Nate Simms",
+      "email": "nathan.s.simms@gmail.com"
+    }
+  ],
+  "boardMembers": [
+    {
+      "name": "Kim Wilson",
+      "role": "President",
+      "initials": "KW",
+      "bio": "Former high school teacher, now works at Highland. Originally from New Zealand (2014). Mom to Ivy (3rd), Theo (8th), and Harry (6th)."
+    },
+    {
+      "name": "Kyle Thompson",
+      "role": "Vice President",
+      "initials": "KT",
+      "bio": "Organized the 2023 Color Run. Sits on a District 196 Council. Dad to a 3rd grader and a Kindergartener. Go Scotties!"
+    },
+    {
+      "name": "Nate Simms",
+      "role": "Treasurer",
+      "initials": "NS",
+      "bio": "Former Site Council Parent Leader. Serves on Superintendent Parent Leader Forum and Curriculum & Instruction Advisory Council."
+    },
+    {
+      "name": "Kaitlin Graff",
+      "role": "Secretary",
+      "initials": "KG",
+      "bio": "Second term in this role. Mom to Ryland (8th), Braeden (5th), and Amelia (2nd). Thrilled to be part of this incredible community!"
+    },
+    {
+      "name": "Coral Karsky",
+      "role": "Communications",
+      "initials": "CK",
+      "bio": "Mom to three boys, two of whom attend Highland. Also volunteers as a substitute teacher and field trip chaperone!"
+    }
+  ]
+}

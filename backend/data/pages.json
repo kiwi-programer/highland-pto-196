@@ -1,0 +1,58 @@
+{
+  "pages": [
+    {
+      "slug": "home",
+      "title": "Where Community Meets Classroom",
+      "navLabel": "Home",
+      "summary": "The Highland Elementary PTO connects families, staff, and neighbors to create an exceptional learning experience for every student. test",
+      "content": "Welcome to the Highland Elementary PTO. We were founded in 2022 to make it easier for families and guardians to participate in school life and strengthen the connection between home and school.\n\nOur mission is to support students, staff, and families through volunteering, community building, and fundraising that directly benefits classrooms and school-wide programs.\n\nOn this site you can find meeting information, ways to get involved, committee details, leadership contacts, and highlights from major events throughout the year.",
+      "order": 1,
+      "updatedAt": "2026-03-27T20:16:31.679Z"
+    },
+    {
+      "slug": "meetings",
+      "title": "2025-2026 Meeting Dates",
+      "navLabel": "Meetings",
+      "summary": "Join us for monthly PTO meetings. All parents, guardians, and community members are welcome.",
+      "content": "PTO meetings are a great way to stay informed, meet other families, and help shape what we do throughout the year. Meetings are open to all parents, guardians, staff, and community members.\n\nLocation & time:\n- Highland Elementary Library (District 196, Apple Valley, MN)\n- 6:00 PM – 7:30 PM\n\nTypical agenda topics:\n- Upcoming events and volunteer needs\n- Budget updates and fundraising progress\n- Committee reports and planning\n- Q&A and community feedback\n\n2025–2026 meeting dates:\n- September 11\n- November 13\n- January 15 (officer elections)\n- March 12\n- May 14\n\nQuestions? Email {{contactEmail}}.",
+      "order": 2,
+      "updatedAt": "2026-04-03T00:31:23.888Z"
+    },
+    {
+      "slug": "committees",
+      "title": "Our Committees",
+      "navLabel": "Committees",
+      "summary": "Find a committee where you can contribute in a way that fits your schedule and interests.",
+      "content": "Committees are where most of the PTO’s work happens. You can join one committee or help occasionally—every level of involvement matters.\n\nHospitality\n- Supports staff appreciation and family-facing events with food and fellowship\n- Examples: conference meals, kindergarten and grade-level events, year-end celebrations\n\nSchool Pride\n- Builds community identity and school spirit\n- Examples: picture day support, apparel, book fair, special school days\n\nSocial Events\n- Creates welcoming, fun opportunities for families to connect\n- Examples: restaurant nights, back-to-school events, family fun night\n\nFundraising\n- Raises funds to support student programs and classroom needs\n- Examples: donation drives, partner programs (like labels/box tops), annual event support\n\nNot sure where you fit? Email {{contactEmail}} and ask to be added to the volunteer list.",
+      "order": 3,
+      "updatedAt": "2026-03-27T00:00:00.000Z"
+    },
+    {
+      "slug": "board",
+      "title": "Meet the Executive Board",
+      "navLabel": "Board",
+      "summary": "Your 2025-2026 Highland PTO officers are committed to supporting every student.",
+      "content": "The Executive Board helps the PTO run smoothly and stays accountable to the community. Officers coordinate committees, manage finances, support school communication, and ensure events and fundraising efforts align to student and staff needs.\n\nCommon officer responsibilities:\n- President: sets meeting agendas, supports committees, partners with school leadership\n- Vice President: assists planning and fills in as needed\n- Treasurer: manages budgeting, reporting, reimbursements, and fundraising accounting\n- Secretary: records minutes, supports documentation and communication\n- Communications: helps share updates and volunteer needs with families\n\nElections are held in January, and each position typically serves a 2-year term. If you’re interested in serving in the future, email {{contactEmail}}.",
+      "order": 4,
+      "updatedAt": "2026-03-27T00:00:00.000Z"
+    },
+    {
+      "slug": "fun-run",
+      "title": "Annual Fun Run",
+      "navLabel": "Fun Run",
+      "summary": "Our largest annual event brings students, families, and staff together while raising funds for school programs.",
+      "content": "The Fun Run is one of our biggest community events. It’s a day of school spirit and family participation, and it also helps fund PTO support for classrooms and student experiences.\n\nWhat to expect:\n- Volunteer roles before and during the event (set-up, student support, check-in, clean-up)\n- Optional add-ons that may include ticket bundles or a silent auction\n- Communication sent to families with schedules, volunteer sign-ups, and event details\n\nHow you can help:\n- Volunteer for a shift\n- Donate items or services for auction-style fundraising (if offered)\n- Share event information with friends and family\n\nFor volunteer links and updates, watch PTO communications or email {{contactEmail}}.",
+      "order": 5,
+      "updatedAt": "2026-03-27T00:00:00.000Z"
+    },
+    {
+      "slug": "contact",
+      "title": "Get Involved (Updated)",
+      "navLabel": "Contact",
+      "summary": "Updated summary",
+      "content": "Updated content",
+      "order": 6,
+      "updatedAt": "2026-03-27T20:14:26.723Z"
+    }
+  ]
+}
