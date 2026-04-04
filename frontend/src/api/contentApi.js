@@ -1,5 +1,10 @@
 function normalizeApiBase(rawBase) {
-  const base = String(rawBase || '').trim().replace(/\/+$/, '')
+  let base = String(rawBase || '').trim().replace(/\/+$/, '')
+
+  // If the value looks like a host but has no scheme, default to https in production.
+  if (base && !base.startsWith('/') && !/^https?:\/\//i.test(base)) {
+    base = `https://${base}`
+  }
 
   if (!base || base === '/') {
     return '/api'
