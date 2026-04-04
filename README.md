@@ -105,7 +105,7 @@ frontend: VITE_ADMIN_URL, VITE_API_BASE_URL
 1. Deploy [frontend/](frontend) as the public site.
 2. Deploy [admin/](admin) as a separate app or subdomain.
 3. Deploy [backend/](backend) as the API.
-4. Point each frontend at the backend with `VITE_API_BASE_URL`.
+4. Point each frontend at the backend with `VITE_API_BASE_URL`. Use the backend origin or the full `/api` URL; the app will normalize either form.
 5. Point the public site at the admin app with `VITE_ADMIN_URL`.
 
 ## Notes

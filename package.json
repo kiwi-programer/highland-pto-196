@@ -12,7 +12,10 @@
     "dev:frontend": "npm run dev --workspace frontend",
     "dev:backend": "npm run dev --workspace backend",
     "dev:admin": "npm run dev --workspace admin",
-    "build": "npm run build --workspace frontend && npm run build --workspace admin"
+    "build": "npm run build --workspace frontend && npm run build --workspace admin",
+    "build:frontend": "npm run build --workspace frontend && npm run build --workspace backend",
+    "build:backend": "npm run build --workspace backend",
+    "build:admin": "npm run build --workspace admin"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
