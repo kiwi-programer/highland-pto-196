@@ -9,9 +9,33 @@ function normalizeApiBase(rawBase) {
 }
 
 const API_BASE = normalizeApiBase(import.meta.env.VITE_API_BASE_URL)
+const DEBUG_API = String(import.meta.env.VITE_DEBUG_API || '').toLowerCase() === 'true'
+
+function debugApiLog(message, details) {
+  if (!DEBUG_API) {
+    return
+  }
+
+  if (details !== undefined) {
+    console.log(`[frontend-api] ${message}`, details)
+    return
+  }
+
+  console.log(`[frontend-api] ${message}`)
+}
 
 async function request(path, options = {}) {
-  const response = await fetch(`${API_BASE}${path}`, {
+  const url = `${API_BASE}${path}`
+  const method = options.method || 'GET'
+
+  debugApiLog('Request start', {
+    method,
+    url,
+    apiBase: API_BASE,
+    hasBody: Boolean(options.body)
+  })
+
+  const response = await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
       ...(options.headers || {})
@@ -21,8 +45,19 @@ async function request(path, options = {}) {
 
   const payload = await response.json().catch(() => ({}))
 
+  debugApiLog('Response received', {
+    method,
+    url,
+    status: response.status,
+    ok: response.ok,
+    payload
+  })
+
   if (!response.ok) {
-    throw new Error(payload.message || `Request failed with status ${response.status}`)
+    throw new Error(
+      payload.message ||
+      `Request failed with status ${response.status} at ${url}. Check VITE_API_BASE_URL and backend /api routes.`
+    )
   }
 
   return payload
