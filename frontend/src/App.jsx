@@ -408,7 +408,7 @@ function App() {
     const [pagesResult, siteResult] = await Promise.allSettled([fetchPages(), fetchSite()])
 
     if (pagesResult.status !== 'fulfilled') {
-      setError(pagesResult.reason?.message || 'Unable to load site content.')
+      setError(`Pages request failed: ${pagesResult.reason?.message || 'Unable to load site content.'}`)
       setLoading(false)
       return
     }
@@ -418,6 +418,7 @@ function App() {
     if (siteResult.status === 'fulfilled') {
       setSite(siteResult.value.site || defaultSite)
     } else {
+      console.error('[frontend] Site request failed, using defaults.', siteResult.reason)
       setSite(defaultSite)
     }
 

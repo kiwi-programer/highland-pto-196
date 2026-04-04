@@ -434,7 +434,7 @@ export default function App({ authEnabled = false }) {
         }
 
         setToken(accessToken)
-        const [pagesResult, siteResult] = await Promise.all([
+        const [pagesResult, siteResult] = await Promise.allSettled([
           fetchPages(accessToken),
           fetchSite(accessToken)
         ])
@@ -443,8 +443,22 @@ export default function App({ authEnabled = false }) {
           return
         }
 
-        setPages(pagesResult.pages)
-        setSite(cloneSite(siteResult.site || emptySite))
+        if (pagesResult.status !== 'fulfilled') {
+          throw new Error(`Pages request failed: ${pagesResult.reason?.message || 'Unknown error'}`)
+        }
+
+        setPages(pagesResult.value.pages)
+
+        if (siteResult.status === 'fulfilled') {
+          setSite(cloneSite(siteResult.value.site || emptySite))
+        } else {
+          console.error('[admin] Site request failed, using defaults.', siteResult.reason)
+          setSite(cloneSite(emptySite))
+          setStatus({
+            type: 'error',
+            text: `Site request failed: ${siteResult.reason?.message || 'Unknown error'}`
+          })
+        }
       } catch (error) {
         if (!cancelled) {
           setStatus({ type: 'error', text: error.message })
