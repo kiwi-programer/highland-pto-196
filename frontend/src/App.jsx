@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, Navigate, Route, Routes, useParams } from 'react-router-dom'
 import { fetchPages, fetchSite } from './api/contentApi'
 
@@ -350,11 +350,15 @@ function HomePage({ pages, site }) {
   )
 }
 
-function PageView({ pages, site }) {
+function PageView({ pages, site, isLoading }) {
   const { slug } = useParams()
   const page = pages.find((item) => item.slug === slug)
 
   if (!page) {
+    if (isLoading) {
+      return <HomePage pages={pages} site={site} />
+    }
+
     return <Navigate to="/home" replace />
   }
 
@@ -429,23 +433,18 @@ function App() {
     loadContent()
   }, [loadContent])
 
-  const ready = useMemo(() => !loading && !error, [loading, error])
-
-  if (loading) {
-    return <p className="status-text">Loading...</p>
-  }
-
-  if (error) {
-    return <p className="status-text error">{error}</p>
-  }
-
   return (
-    <Routes>
-      <Route path="/" element={<Navigate to="/home" replace />} />
-      <Route path="/home" element={ready ? <HomePage pages={pages} site={site} /> : <p className="status-text">Loading...</p>} />
-      <Route path="/:slug" element={ready ? <PageView pages={pages} site={site} /> : <p className="status-text">Loading...</p>} />
-      <Route path="*" element={<Navigate to="/home" replace />} />
-    </Routes>
+    <>
+      {loading ? <p className="status-text">Loading latest content...</p> : null}
+      {error ? <p className="status-text error">{error}</p> : null}
+
+      <Routes>
+        <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route path="/home" element={<HomePage pages={pages} site={site} />} />
+        <Route path="/:slug" element={<PageView pages={pages} site={site} isLoading={loading} />} />
+        <Route path="*" element={<Navigate to="/home" replace />} />
+      </Routes>
+    </>
   )
 }
 
