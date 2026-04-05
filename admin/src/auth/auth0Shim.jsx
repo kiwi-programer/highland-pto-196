@@ -29,8 +29,6 @@ function Auth0ContextBridge({ children }) {
 }
 
 export function Auth0Provider({ children }) {
-  console.log('Auth0 Enabled:', authEnabled, 'Config:', { ...authConfig, clientId: authConfig.clientId ? '***' : '' })
-
   if (!authEnabled) {
     return <AuthContext.Provider value={dormantAuthState}>{children}</AuthContext.Provider>
   }
