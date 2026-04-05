@@ -523,7 +523,13 @@ export default function App({ authEnabled = false }) {
           <p className="eyebrow">Private workspace</p>
           <h1>Highland PTO Admin</h1>
           <p>Sign in with Auth0 to edit pages and shared site settings.</p>
-          <button type="button" className="primary-button" onClick={() => loginWithRedirect()}>
+          <button type="button" className="primary-button" onClick={() => {
+            console.log('Initiating Auth0 login...', { user, isAuthenticated, isLoading });
+            loginWithRedirect().catch(err => {
+              console.error('Auth0 login error:', err)
+              alert('Auth0 login error: ' + err.message)
+            });
+          }}>
             Sign in
           </button>
         </div>
