@@ -24,7 +24,11 @@ function hasScope(payload, requiredScope) {
     .map((item) => item.trim())
     .filter(Boolean)
 
-  return scopes.includes(requiredScope)
+  const permissions = Array.isArray(payload.permissions)
+    ? payload.permissions.map((item) => String(item).trim()).filter(Boolean)
+    : []
+
+  return scopes.includes(requiredScope) || permissions.includes(requiredScope)
 }
 
 export function requireAuth(requiredScope = 'admin:write') {
