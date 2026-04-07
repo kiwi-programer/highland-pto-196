@@ -98,3 +98,20 @@ export function updateSite(site, token) {
     body: JSON.stringify({ site })
   }, token)
 }
+
+export function fetchUsers(token) {
+  return request('/users', {}, token)
+}
+
+export function createUser(user, token) {
+  return request('/users', {
+    method: 'POST',
+    body: JSON.stringify(user)
+  }, token)
+}
+
+export function deleteUser(userId, token) {
+  return request(`/users/${encodeURIComponent(userId)}`, {
+    method: 'DELETE'
+  }, token)
+}

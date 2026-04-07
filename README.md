@@ -59,6 +59,7 @@ The admin portal now manages:
 3. Committee contact names and emails
 4. Executive board names, roles, initials, and bios
 5. Footer links and key outbound URLs
+6. Admin user access (add/remove users in Auth0 database connection)
 
 Shared settings live in [backend/data/site.json](backend/data/site.json). Public page body text can reference `{{contactEmail}}`, `{{organizationName}}`, `{{district}}`, `{{location}}`, `{{donateUrl}}`, and `{{volunteerUrl}}`.
 
@@ -78,8 +79,13 @@ Write endpoints:
 1. `POST /pages`
 2. `PUT /pages/:slug`
 3. `PUT /site`
+4. `GET /users` (admin only)
+5. `POST /users` (admin only)
+6. `DELETE /users/:id` (admin only)
 
 When `AUTH0_DOMAIN` and `AUTH0_AUDIENCE` are set, write endpoints require an Auth0 access token with the `admin:write` scope. Until then, auth middleware is bypassed.
+
+User management endpoints also require backend machine-to-machine credentials for the Auth0 Management API.
 
 ## Auth0 setup
 
@@ -93,12 +99,36 @@ When `AUTH0_DOMAIN` and `AUTH0_AUDIENCE` are set, write endpoints require an Aut
 6. Set environment variables:
 
 ```text
-backend: AUTH0_DOMAIN, AUTH0_AUDIENCE
+backend:
+   AUTH0_DOMAIN
+   AUTH0_AUDIENCE
+   AUTH0_M2M_CLIENT_ID
+   AUTH0_M2M_CLIENT_SECRET
+   AUTH0_DB_CONNECTION (optional, defaults to Username-Password-Authentication)
 admin: VITE_AUTH0_DOMAIN, VITE_AUTH0_CLIENT_ID, VITE_AUTH0_AUDIENCE, VITE_AUTH0_REDIRECT_URI
 frontend: VITE_ADMIN_URL, VITE_API_BASE_URL
 ```
 
-7. Once Auth0 is configured, log into the admin portal and it will include an access token automatically when saving pages or site settings. If Auth0 is not set up yet, the admin portal stays open and the backend allows writes without token checks.
+7. Create an Auth0 Machine to Machine application for backend user management:
+    - Authorize it for the Auth0 Management API.
+    - Grant scopes: `read:users`, `create:users`, `delete:users`.
+    - Copy that app's Client ID and Client Secret into `AUTH0_M2M_CLIENT_ID` and `AUTH0_M2M_CLIENT_SECRET`.
+8. Once Auth0 is configured, log into the admin portal and it will include an access token automatically when saving pages/site settings and managing user access. If Auth0 is not set up yet, the admin portal stays open and the backend allows writes without token checks.
+
+## Remove Public Signups (Auth0)
+
+To stop the public from creating accounts, disable signups in your Auth0 database connection:
+
+1. In Auth0 Dashboard, go to Authentication -> Database.
+2. Open your connection (usually `Username-Password-Authentication` or your `AUTH0_DB_CONNECTION` value).
+3. Turn on `Disable Sign Ups` (enabled means public sign up is blocked).
+4. Save changes.
+
+After this change:
+
+1. End users can still sign in if they already have an account.
+2. New accounts cannot be created from the public login screen.
+3. New users should be created from the Admin portal `User Access` tab.
 
 ## Deployment
 

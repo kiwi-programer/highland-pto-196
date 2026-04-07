@@ -1,7 +1,16 @@
 import { useEffect, useState } from 'react'
 import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { useAuth0 } from './auth/auth0Shim.jsx'
-import { createPage, fetchPages, fetchSite, updatePage, updateSite } from './api/contentApi'
+import {
+  createPage,
+  createUser,
+  deleteUser,
+  fetchPages,
+  fetchSite,
+  fetchUsers,
+  updatePage,
+  updateSite
+} from './api/contentApi'
 
 const emptySite = {
   organizationName: 'Highland Elementary PTO',
@@ -115,6 +124,11 @@ function EditorChrome({ authEnabled, user, onLogout, children }) {
         <Link className={location.pathname.startsWith('/pages') || location.pathname === '/' ? 'active' : ''} to="/pages">
           Page Content
         </Link>
+        {authEnabled ? (
+          <Link className={location.pathname.startsWith('/users') ? 'active' : ''} to="/users">
+            User Access
+          </Link>
+        ) : null}
       </nav>
 
       {children}
@@ -410,10 +424,110 @@ function SiteSettingsPage({ site, onSaveSite, status, loading }) {
   )
 }
 
+function UserAccessPage({ users, status, loading, onCreateUser, onRemoveUser }) {
+  const [form, setForm] = useState({ email: '', name: '', password: '' })
+
+  async function handleCreate(event) {
+    event.preventDefault()
+    await onCreateUser(form)
+    setForm({ email: '', name: '', password: '' })
+  }
+
+  const sortedUsers = [...users].sort((a, b) => (a.email || '').localeCompare(b.email || ''))
+
+  return (
+    <div className="status-stack">
+      <div className="status-row">
+        {status ? <div className={`status-pill ${status.type}`}>{status.text}</div> : null}
+        {loading ? <div className="status-pill info">Loading users...</div> : null}
+      </div>
+
+      <div className="admin-grid single-column">
+        <section className="panel editor-panel">
+          <div className="panel-head">
+            <div>
+              <h2>Add User</h2>
+              <p>Create login credentials for PTO staff. This replaces public self-signup.</p>
+            </div>
+          </div>
+
+          <form onSubmit={handleCreate} className="panel-form">
+            <div className="form-grid two-up">
+              <label>
+                Email
+                <input
+                  type="email"
+                  required
+                  value={form.email}
+                  onChange={(event) => setForm((prev) => ({ ...prev, email: event.target.value }))}
+                />
+              </label>
+              <label>
+                Name (optional)
+                <input
+                  value={form.name}
+                  onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
+                />
+              </label>
+            </div>
+
+            <label>
+              Temporary password
+              <input
+                type="password"
+                required
+                minLength={8}
+                value={form.password}
+                onChange={(event) => setForm((prev) => ({ ...prev, password: event.target.value }))}
+              />
+            </label>
+
+            <div className="button-row">
+              <button type="submit" className="primary-button">Add user</button>
+            </div>
+          </form>
+        </section>
+
+        <section className="panel editor-panel">
+          <div className="panel-head">
+            <div>
+              <h2>Current Users</h2>
+              <p>Remove access instantly when needed.</p>
+            </div>
+          </div>
+
+          <div className="page-list">
+            {sortedUsers.map((managedUser) => (
+              <article className="user-item" key={managedUser.user_id}>
+                <div>
+                  <strong>{managedUser.email || managedUser.name || managedUser.user_id}</strong>
+                  <span>{managedUser.name || 'No display name'}</span>
+                </div>
+                <button
+                  type="button"
+                  className="text-button danger"
+                  onClick={() => onRemoveUser(managedUser.user_id)}
+                >
+                  Remove
+                </button>
+              </article>
+            ))}
+
+            {!sortedUsers.length ? (
+              <p className="panel-note">No users found for the configured Auth0 database connection.</p>
+            ) : null}
+          </div>
+        </section>
+      </div>
+    </div>
+  )
+}
+
 export default function App({ authEnabled = false }) {
   const { isAuthenticated, isLoading, loginWithRedirect, logout, user, getAccessTokenSilently } = useAuth0()
   const [pages, setPages] = useState([])
   const [site, setSite] = useState(emptySite)
+  const [users, setUsers] = useState([])
   const [status, setStatus] = useState(null)
   const [loading, setLoading] = useState(false)
   const [token, setToken] = useState('')
@@ -434,9 +548,10 @@ export default function App({ authEnabled = false }) {
         }
 
         setToken(accessToken)
-        const [pagesResult, siteResult] = await Promise.allSettled([
+        const [pagesResult, siteResult, usersResult] = await Promise.allSettled([
           fetchPages(accessToken),
-          fetchSite(accessToken)
+          fetchSite(accessToken),
+          authEnabled ? fetchUsers(accessToken) : Promise.resolve({ users: [] })
         ])
 
         if (cancelled) {
@@ -457,6 +572,16 @@ export default function App({ authEnabled = false }) {
           setStatus({
             type: 'error',
             text: `Site request failed: ${siteResult.reason?.message || 'Unknown error'}`
+          })
+        }
+
+        if (usersResult.status === 'fulfilled') {
+          setUsers(Array.isArray(usersResult.value.users) ? usersResult.value.users : [])
+        } else {
+          console.error('[admin] Users request failed.', usersResult.reason)
+          setStatus({
+            type: 'error',
+            text: `Users request failed: ${usersResult.reason?.message || 'Unknown error'}`
           })
         }
       } catch (error) {
@@ -512,6 +637,28 @@ export default function App({ authEnabled = false }) {
     }
   }
 
+  async function createManagedUser(nextUser) {
+    try {
+      setStatus({ type: 'info', text: 'Adding user...' })
+      const result = await createUser(nextUser, token)
+      setUsers((current) => [...current, result.user])
+      setStatus({ type: 'success', text: 'User added.' })
+    } catch (error) {
+      setStatus({ type: 'error', text: error.message })
+    }
+  }
+
+  async function removeManagedUser(userId) {
+    try {
+      setStatus({ type: 'info', text: 'Removing user...' })
+      await deleteUser(userId, token)
+      setUsers((current) => current.filter((item) => item.user_id !== userId))
+      setStatus({ type: 'success', text: 'User removed.' })
+    } catch (error) {
+      setStatus({ type: 'error', text: error.message })
+    }
+  }
+
   if (authEnabled && isLoading) {
     return <div className="login-screen"><div className="login-card">Loading session...</div></div>
   }
@@ -547,6 +694,20 @@ export default function App({ authEnabled = false }) {
           path="/settings"
           element={<SiteSettingsPage site={site} onSaveSite={saveSite} status={status} loading={loading} />}
         />
+        {authEnabled ? (
+          <Route
+            path="/users"
+            element={(
+              <UserAccessPage
+                users={users}
+                status={status}
+                loading={loading}
+                onCreateUser={createManagedUser}
+                onRemoveUser={removeManagedUser}
+              />
+            )}
+          />
+        ) : null}
         <Route path="*" element={<Navigate to="/pages" replace />} />
       </Routes>
     </EditorChrome>

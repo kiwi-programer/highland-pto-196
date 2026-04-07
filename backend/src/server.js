@@ -3,6 +3,7 @@ import cors from 'cors'
 import morgan from 'morgan'
 import pagesRouter from './routes/pages.js'
 import siteRouter from './routes/site.js'
+import usersRouter from './routes/users.js'
 import { PORT } from './config.js'
 
 const app = express()
@@ -35,6 +36,7 @@ app.get('/api/health', (_req, res) => {
 
 app.use('/api/pages', pagesRouter)
 app.use('/api/site', siteRouter)
+app.use('/api/users', usersRouter)
 
 app.use((req, res) => {
   console.warn('[backend][404] Route not found', {
@@ -55,7 +57,11 @@ app.use((req, res) => {
 
 app.use((error, _req, res, _next) => {
   console.error(error)
-  res.status(500).json({ message: 'Unexpected server error.' })
+  if (error?.status && Number.isInteger(error.status)) {
+    return res.status(error.status).json({ message: error.message || 'Request failed.' })
+  }
+
+  return res.status(500).json({ message: 'Unexpected server error.' })
 })
 
 app.listen(PORT, () => {

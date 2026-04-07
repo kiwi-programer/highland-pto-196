@@ -185,6 +185,10 @@ textarea {
   align-items: start;
 }
 
+.admin-grid.single-column {
+  grid-template-columns: 1fr;
+}
+
 .sidebar,
 .editor-column {
   display: grid;
@@ -298,6 +302,28 @@ textarea {
 .page-item.active {
   border-color: rgba(204, 26, 26, 0.45);
   box-shadow: 0 0 0 3px rgba(204, 26, 26, 0.1);
+}
+
+.user-item {
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  padding: 0.95rem 1rem;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-item strong {
+  display: block;
+  font-size: 0.95rem;
+}
+
+.user-item span {
+  color: var(--soft);
+  font-size: 0.82rem;
 }
 
 .repeatable-list {
