@@ -18,6 +18,7 @@ const authConfig = {
   domain: String(import.meta.env.VITE_AUTH0_DOMAIN || '').trim(),
   clientId: String(import.meta.env.VITE_AUTH0_CLIENT_ID || '').trim(),
   audience: String(import.meta.env.VITE_AUTH0_AUDIENCE || '').trim(),
+  scope: String(import.meta.env.VITE_AUTH0_SCOPE || 'openid profile email admin:write').trim(),
   redirectUri: String(import.meta.env.VITE_AUTH0_REDIRECT_URI || '').trim()
 }
 
@@ -43,6 +44,7 @@ export function Auth0Provider({ children }) {
       useRefreshTokens
       authorizationParams={{
         audience: authConfig.audience,
+        scope: authConfig.scope,
         redirect_uri: redirectUri
       }}
     >
