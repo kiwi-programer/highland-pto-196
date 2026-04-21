@@ -52,13 +52,27 @@ export function requireAuth(requiredScope = 'admin:write') {
       })
 
       if (!hasScope(payload, requiredScope)) {
+        console.error('[backend][auth]', 'Token rejected: missing required scope or permission', {
+          required: requiredScope,
+          providedScopes: payload.scope,
+          providedPermissions: payload.permissions
+        })
         return res.status(403).json({ message: 'Insufficient permissions.' })
       }
 
       req.auth = payload
       return next()
     } catch (error) {
-      return res.status(401).json({ message: 'Invalid or expired token.' })
+      const isOpaque = token.length < 50
+      const debugTip = isOpaque 
+        ? 'Token looks opaque (too short to be a JWT). Check VITE_AUTH0_AUDIENCE in your admin app.' 
+        : `Backend expected issuer: ${issuer} and audience: ${AUTH0_AUDIENCE}.`
+        
+      console.error('[backend][auth]', 'Token validation failed', error.message, { expectedIssuer: issuer, expectedAudience: AUTH0_AUDIENCE, isOpaque })
+      
+      return res.status(401).json({ 
+        message: `Invalid or expired token. Reason: ${error.message}. ${debugTip}` 
+      })
     }
   }
 }
