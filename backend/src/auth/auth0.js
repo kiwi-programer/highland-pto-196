@@ -32,16 +32,27 @@ function hasScope(payload, requiredScope) {
 }
 
 export function requireAuth(requiredScope = 'admin:write') {
-  const issuer = AUTH0_DOMAIN ? `https://${AUTH0_DOMAIN}/` : ''
-  const jwks = AUTH0_DOMAIN ? createRemoteJWKSet(new URL(`https://${AUTH0_DOMAIN}/.well-known/jwks.json`)) : null
+  const cleanDomain = AUTH0_DOMAIN ? AUTH0_DOMAIN.replace(/^https?:\/\//, '').replace(/\/$/, '') : ''
+  const issuer = cleanDomain ? `https://${cleanDomain}/` : ''
+  const jwks = cleanDomain ? createRemoteJWKSet(new URL(`https://${cleanDomain}/.well-known/jwks.json`)) : null
 
   return async (req, res, next) => {
     if (!AUTH0_ENABLED || !jwks) {
       return next()
     }
 
-    const token = getBearerToken(req.headers.authorization)
+    const authHeader = req.headers.authorization || ''
+    const token = getBearerToken(authHeader)
+
+    console.log('[backend][auth] incoming request auth header present:', Boolean(authHeader))
+    console.log('[backend][auth] auth header length:', String(authHeader).length)
+    console.log('[backend][auth] expected issuer:', issuer, 'audience:', AUTH0_AUDIENCE)
     if (!token) {
+      console.warn('[backend][auth] Missing bearer token. Headers:', {
+        host: req.headers.host,
+        origin: req.headers.origin || 'none'
+      })
+
       return res.status(401).json({ message: 'Missing bearer token.' })
     }
 
@@ -51,12 +62,18 @@ export function requireAuth(requiredScope = 'admin:write') {
         audience: AUTH0_AUDIENCE
       })
 
+      console.log('[backend][auth] token validated; payload keys:', Object.keys(payload || {}))
+      console.log('[backend][auth] payload scopes:', payload.scope)
+      console.log('[backend][auth] payload permissions:', payload.permissions)
+
       if (!hasScope(payload, requiredScope)) {
-        console.error('[backend][auth]', 'Token rejected: missing required scope or permission', {
+        console.error('[backend][auth] Token rejected: missing required scope or permission', {
           required: requiredScope,
           providedScopes: payload.scope,
           providedPermissions: payload.permissions
         })
+
+        // include a helpful hint in the response for debugging environments
         return res.status(403).json({ message: 'Insufficient permissions.' })
       }
 
@@ -67,9 +84,19 @@ export function requireAuth(requiredScope = 'admin:write') {
       const debugTip = isOpaque 
         ? 'Token looks opaque (too short to be a JWT). Check VITE_AUTH0_AUDIENCE in your admin app.' 
         : `Backend expected issuer: ${issuer} and audience: ${AUTH0_AUDIENCE}.`
-        
-      console.error('[backend][auth]', 'Token validation failed', error.message, { expectedIssuer: issuer, expectedAudience: AUTH0_AUDIENCE, isOpaque })
-      
+
+      console.error('[backend][auth] Token validation failed', {
+        message: error.message,
+        stack: error.stack,
+        expectedIssuer: issuer,
+        expectedAudience: AUTH0_AUDIENCE,
+        isOpaque,
+        authHeaderSummary: {
+          present: Boolean(authHeader),
+          length: String(authHeader).length
+        }
+      })
+
       return res.status(401).json({ 
         message: `Invalid or expired token. Reason: ${error.message}. ${debugTip}` 
       })

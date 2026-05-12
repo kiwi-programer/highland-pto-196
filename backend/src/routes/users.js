@@ -10,8 +10,9 @@ import {
 
 const router = Router()
 
-const MANAGEMENT_AUDIENCE = AUTH0_DOMAIN ? `https://${AUTH0_DOMAIN}/api/v2/` : ''
-const MANAGEMENT_TOKEN_URL = AUTH0_DOMAIN ? `https://${AUTH0_DOMAIN}/oauth/token` : ''
+// The management API audience MUST be https://domain/api/v2/
+const MANAGEMENT_AUDIENCE = AUTH0_DOMAIN ? `https://${AUTH0_DOMAIN.replace(/^https?:\/\//, '').replace(/\/$/, '')}/api/v2/` : ''
+const MANAGEMENT_TOKEN_URL = AUTH0_DOMAIN ? `https://${AUTH0_DOMAIN.replace(/^https?:\/\//, '').replace(/\/$/, '')}/oauth/token` : ''
 
 let cachedManagementToken = ''
 let cachedManagementTokenExpiresAt = 0

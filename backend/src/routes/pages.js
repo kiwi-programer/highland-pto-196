@@ -74,6 +74,7 @@ router.get('/:slug', async (req, res, next) => {
 
 router.post('/', requireAuth(), async (req, res, next) => {
   try {
+    console.log('[backend][pages][POST] auth present:', Boolean(req.auth), 'auth sub:', req.auth?.sub)
     const data = await readPages()
     const { error, value } = validatePageInput(req.body, { isCreate: true })
 
@@ -97,6 +98,7 @@ router.post('/', requireAuth(), async (req, res, next) => {
 
 router.put('/:slug', requireAuth(), async (req, res, next) => {
   try {
+    console.log('[backend][pages][PUT] auth present:', Boolean(req.auth), 'auth sub:', req.auth?.sub)
     const data = await readPages()
     const index = data.pages.findIndex((item) => item.slug === req.params.slug)
 

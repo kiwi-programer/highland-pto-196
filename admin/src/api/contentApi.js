@@ -50,6 +50,19 @@ async function request(path, options = {}, token) {
     ...options
   })
 
+  if (DEBUG_API) {
+    try {
+      console.log('[admin-api] request headers:', {
+        url,
+        hasToken: Boolean(token),
+        tokenLength: token ? String(token).length : 0,
+        headers: { ...((options && options.headers) || {}) }
+      })
+    } catch (e) {
+      console.warn('[admin-api] failed to log request headers', e)
+    }
+  }
+
   const payload = await response.json().catch(() => ({}))
 
   debugApiLog('Response received', {
@@ -59,6 +72,14 @@ async function request(path, options = {}, token) {
     ok: response.ok,
     payload
   })
+
+  if (DEBUG_API) {
+    try {
+      console.log('[admin-api] response headers:', Array.from(response.headers || []))
+    } catch (e) {
+      console.warn('[admin-api] failed to log response headers', e)
+    }
+  }
 
   if (!response.ok) {
     throw new Error(

@@ -48,6 +48,17 @@ async function request(path, options = {}) {
     ...options
   })
 
+  if (DEBUG_API) {
+    try {
+      console.log('[frontend-api] request headers:', {
+        url,
+        headers: { ...((options && options.headers) || {}) }
+      })
+    } catch (e) {
+      console.warn('[frontend-api] failed to log request headers', e)
+    }
+  }
+
   const payload = await response.json().catch(() => ({}))
 
   debugApiLog('Response received', {
@@ -57,6 +68,14 @@ async function request(path, options = {}) {
     ok: response.ok,
     payload
   })
+
+  if (DEBUG_API) {
+    try {
+      console.log('[frontend-api] response headers:', Array.from(response.headers || []))
+    } catch (e) {
+      console.warn('[frontend-api] failed to log response headers', e)
+    }
+  }
 
   if (!response.ok) {
     throw new Error(
