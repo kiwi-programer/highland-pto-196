@@ -111,9 +111,10 @@ frontend: VITE_ADMIN_URL, VITE_API_BASE_URL
 
 7. Create an Auth0 Machine to Machine application for backend user management:
     - Authorize it for the Auth0 Management API.
-    - Grant scopes: `read:users`, `create:users`, `delete:users`.
+    - Grant scopes: `read:users`, `create:users`, `delete:users`, `read:connections`.
     - Copy that app's Client ID and Client Secret into `AUTH0_M2M_CLIENT_ID` and `AUTH0_M2M_CLIENT_SECRET`.
 8. Once Auth0 is configured, log into the admin portal and it will include an access token automatically when saving pages/site settings and managing user access. If Auth0 is not set up yet, the admin portal stays open and the backend allows writes without token checks.
+9. The backend resolves the actual Auth0 database connection before listing or creating users. If `AUTH0_DB_CONNECTION` does not match a real Auth0 database connection, the API returns a 503 with the available connection names.
 
 ## Remove Public Signups (Auth0)
 

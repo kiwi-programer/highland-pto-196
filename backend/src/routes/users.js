@@ -16,6 +16,8 @@ const MANAGEMENT_TOKEN_URL = AUTH0_DOMAIN ? `https://${AUTH0_DOMAIN.replace(/^ht
 
 let cachedManagementToken = ''
 let cachedManagementTokenExpiresAt = 0
+let cachedDatabaseConnections = []
+let cachedDatabaseConnectionsExpiresAt = 0
 
 function ensureManagementConfig(res) {
   if (!AUTH0_MANAGEMENT_ENABLED || !MANAGEMENT_AUDIENCE || !MANAGEMENT_TOKEN_URL) {
@@ -83,6 +85,82 @@ async function managementRequest(path, options = {}) {
   return payload
 }
 
+async function listDatabaseConnections() {
+  const now = Date.now()
+  if (cachedDatabaseConnections.length && now < cachedDatabaseConnectionsExpiresAt) {
+    return cachedDatabaseConnections
+  }
+
+  const query = new URLSearchParams({
+    per_page: '100',
+    page: '0',
+    include_totals: 'false',
+    include_fields: 'true',
+    fields: 'id,name,strategy,enabled_clients'
+  })
+
+  const connections = await managementRequest(`/connections?${query.toString()}`)
+  const databaseConnections = Array.isArray(connections)
+    ? connections
+        .filter((connection) => String(connection?.strategy || '') === 'auth0')
+        .map((connection) => ({
+          id: String(connection?.id || ''),
+          name: String(connection?.name || '').trim(),
+          strategy: String(connection?.strategy || ''),
+          enabled_clients: Array.isArray(connection?.enabled_clients) ? connection.enabled_clients : []
+        }))
+        .filter((connection) => connection.name)
+    : []
+
+  cachedDatabaseConnections = databaseConnections
+  cachedDatabaseConnectionsExpiresAt = now + 5 * 60 * 1000
+  return cachedDatabaseConnections
+}
+
+async function resolveDatabaseConnection() {
+  const configuredConnection = String(AUTH0_DB_CONNECTION || '').trim()
+  const connections = await listDatabaseConnections()
+
+  if (configuredConnection) {
+    const match = connections.find((connection) => connection.name === configuredConnection)
+    if (match) {
+      return match.name
+    }
+
+    const availableConnections = connections.map((connection) => connection.name)
+    const error = new Error(
+      availableConnections.length
+        ? `Configured Auth0 database connection "${configuredConnection}" does not exist. Available database connections: ${availableConnections.join(', ')}.`
+        : `Configured Auth0 database connection "${configuredConnection}" does not exist and no database connections were returned by Auth0.`
+    )
+    error.status = 503
+    error.details = {
+      configuredConnection,
+      availableConnections
+    }
+    throw error
+  }
+
+  if (connections.length === 1) {
+    return connections[0].name
+  }
+
+  if (connections.length === 0) {
+    const error = new Error('No Auth0 database connections were returned by Auth0.')
+    error.status = 503
+    error.details = { availableConnections: [] }
+    throw error
+  }
+
+  const availableConnections = connections.map((connection) => connection.name)
+  const error = new Error(
+    `Multiple Auth0 database connections exist. Set AUTH0_DB_CONNECTION to one of: ${availableConnections.join(', ')}.`
+  )
+  error.status = 503
+  error.details = { availableConnections }
+  throw error
+}
+
 function createUserErrorResponse(error) {
   const details = error?.details && typeof error.details === 'object' ? error.details : {}
   const message = String(error?.message || details.message || 'Failed to create user.')
@@ -132,13 +210,14 @@ router.get('/', requireAuth(), async (_req, res, next) => {
   }
 
   try {
+    const connectionName = await resolveDatabaseConnection()
     const query = new URLSearchParams({
       per_page: '100',
       page: '0',
       include_totals: 'false',
       include_fields: 'true',
       fields: 'user_id,email,name,created_at,identities',
-      q: `identities.connection:\"${AUTH0_DB_CONNECTION}\"`,
+      q: `identities.connection:\"${connectionName}\"`,
       search_engine: 'v3'
     })
 
@@ -167,10 +246,11 @@ router.post('/', requireAuth(), async (req, res, next) => {
       return res.status(400).json({ message: 'password must be at least 8 characters.' })
     }
 
+    const connectionName = await resolveDatabaseConnection()
     const createdUser = await managementRequest('/users', {
       method: 'POST',
       body: JSON.stringify({
-        connection: AUTH0_DB_CONNECTION,
+        connection: connectionName,
         email,
         password,
         name: name || undefined,
