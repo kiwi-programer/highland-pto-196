@@ -73,13 +73,47 @@ async function managementRequest(path, options = {}) {
   const payload = await response.json().catch(() => ({}))
 
   if (!response.ok) {
-    const auth0Message = payload.message || payload.error_description || 'Auth0 request failed.'
+    const auth0Message = payload.message || payload.error_description || payload.error || 'Auth0 request failed.'
     const error = new Error(auth0Message)
     error.status = response.status
+    error.details = payload
     throw error
   }
 
   return payload
+}
+
+function createUserErrorResponse(error) {
+  const details = error?.details && typeof error.details === 'object' ? error.details : {}
+  const message = String(error?.message || details.message || 'Failed to create user.')
+
+  if (/already exists|duplicate/i.test(message)) {
+    return {
+      status: 409,
+      body: {
+        message: 'A user with that email already exists.',
+        details
+      }
+    }
+  }
+
+  if (/password/i.test(message) && /length|strength|policy|invalid/i.test(message)) {
+    return {
+      status: 400,
+      body: {
+        message,
+        details
+      }
+    }
+  }
+
+  return {
+    status: Number.isInteger(error?.status) ? error.status : 500,
+    body: {
+      message,
+      details
+    }
+  }
 }
 
 function sanitizeUser(user) {
@@ -146,6 +180,11 @@ router.post('/', requireAuth(), async (req, res, next) => {
 
     return res.status(201).json({ user: sanitizeUser(createdUser) })
   } catch (error) {
+    if (error?.details || error?.status) {
+      const response = createUserErrorResponse(error)
+      return res.status(response.status).json(response.body)
+    }
+
     return next(error)
   }
 })
