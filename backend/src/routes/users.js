@@ -122,10 +122,10 @@ router.post('/', requireAuth(), async (req, res, next) => {
 
   try {
     const email = String(req.body?.email || '').trim().toLowerCase()
-    const password = String(req.body?.password || '').trim()
+    const password = String(req.body?.password || '')
     const name = String(req.body?.name || '').trim()
 
-    if (!email || !password) {
+    if (!email || !password.trim()) {
       return res.status(400).json({ message: 'email and password are required.' })
     }
 
