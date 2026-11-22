@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useState } from 'react'
+import { createContext, useContext, useCallback, useEffect, useState } from 'react'
 import { Link, Navigate, Route, Routes, useParams } from 'react-router-dom'
 import { fetchPages, fetchSite } from './api/contentApi'
+
+const EditorContext = createContext(false)
 
 const defaultSite = {
   organizationName: 'Highland Elementary PTO',
@@ -125,6 +127,7 @@ function resolveTemplate(text, site) {
 }
 
 function SiteNav({ pages, site }) {
+  const editor = useContext(EditorContext)
   const sorted = [...pages].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
   const adminUrl = import.meta.env.VITE_ADMIN_URL || 'http://localhost:5174'
 
@@ -140,7 +143,7 @@ function SiteNav({ pages, site }) {
       <ul className="nav-links">
         {sorted.map((page) => (
           <li key={page.slug}>
-            <Link to={`/${page.slug}`}>{page.navLabel || page.title}</Link>
+            {editor ? <a href={`/${page.slug}`}>{page.navLabel || page.title}</a> : <Link to={`/${page.slug}`}>{page.navLabel || page.title}</Link>}
           </li>
         ))}
       </ul>
@@ -350,8 +353,7 @@ function HomePage({ pages, site }) {
   )
 }
 
-function PageView({ pages, site, isLoading }) {
-  const { slug } = useParams()
+function PageContent({ pages, site, isLoading, slug }) {
   const page = pages.find((item) => item.slug === slug)
 
   if (!page) {
@@ -399,6 +401,11 @@ function PageView({ pages, site, isLoading }) {
   )
 }
 
+function PageView(props) { const {slug} = useParams(); return <PageContent {...props} slug={slug} /> }
+export function HighlandPreview({page,pages,site=defaultSite}) {
+ const current=pages.map(p=>p.slug===page.slug?page:p)
+ return <EditorContext.Provider value={true}>{page.slug==="home"?<HomePage pages={current} site={site}/>:<PageContent pages={current} site={site} slug={page.slug}/>}</EditorContext.Provider>
+}
 function App() {
   const [pages, setPages] = useState([])
   const [site, setSite] = useState(defaultSite)

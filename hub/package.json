@@ -1,0 +1,14 @@
+{
+  "name": "@rua-labs/highland-website",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./preview.jsx",
+    "./styles": "./styles.js"
+  },
+  "peerDependencies": {
+    "react": ">=19",
+    "react-dom": ">=19",
+    "react-router": ">=7"
+  }
+}

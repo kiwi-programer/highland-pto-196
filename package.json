@@ -15,7 +15,8 @@
     "build": "npm run build --workspace frontend && npm run build --workspace admin",
     "build:frontend": "npm run build --workspace frontend && npm run build --workspace backend",
     "build:backend": "npm run build --workspace backend",
-    "build:admin": "npm run build --workspace admin"
+    "build:admin": "npm run build --workspace admin",
+    "package:hub": "node hub/build-adapter.mjs && npm pack ./hub"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
