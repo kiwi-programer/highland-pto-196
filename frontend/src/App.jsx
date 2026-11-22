@@ -153,9 +153,9 @@ function SiteNav({ pages, site }) {
 
 function HomePage({ pages, site }) {
   const homePage = pages?.find((item) => item.slug === 'home')
-  const title = homePage?.title || 'Where Community Meets Classroom'
-  const summary = homePage?.summary || 'The Highland Elementary PTO connects families, staff, and neighbors to create an exceptional learning experience for every student at Highland Elementary.'
-  const contentParagraphs = getParagraphs(resolveTemplate(homePage?.content || "The Highland PTO was started in the Fall of 2022 when Highland Elementary transitioned from a Site Council to a more inclusive PTO model - opening the door for greater parent and guardian participation than ever before.\n\nThe PTO's mission is to facilitate the betterment of Highland families, staff, and students.", site))
+  const title = homePage?.title ?? 'Where Community Meets Classroom'
+  const summary = homePage?.summary ?? 'The Highland Elementary PTO connects families, staff, and neighbors to create an exceptional learning experience for every student at Highland Elementary.'
+  const contentParagraphs = getParagraphs(resolveTemplate(homePage?.content ?? "The Highland PTO was started in the Fall of 2022 when Highland Elementary transitioned from a Site Council to a more inclusive PTO model - opening the door for greater parent and guardian participation than ever before.\n\nThe PTO's mission is to facilitate the betterment of Highland families, staff, and students.", site))
   const committeeContacts = site.committeeContacts || defaultSite.committeeContacts
   const boardMembers = site.boardMembers || defaultSite.boardMembers
   const footerLinks = site.footerLinks || defaultSite.footerLinks
@@ -412,8 +412,8 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const loadContent = useCallback(async () => {
-    setLoading(true)
+  const loadContent = useCallback(async (background = false) => {
+    if (!background) setLoading(true)
     setError('')
 
     const [pagesResult, siteResult] = await Promise.allSettled([fetchPages(), fetchSite()])
@@ -438,6 +438,11 @@ function App() {
 
   useEffect(() => {
     loadContent()
+    const refresh = () => { if (document.visibilityState !== 'hidden') void loadContent(true) }
+    window.addEventListener('focus', refresh)
+    window.addEventListener('pageshow', refresh)
+    document.addEventListener('visibilitychange', refresh)
+    return () => { window.removeEventListener('focus', refresh); window.removeEventListener('pageshow', refresh); document.removeEventListener('visibilitychange', refresh) }
   }, [loadContent])
 
   return (

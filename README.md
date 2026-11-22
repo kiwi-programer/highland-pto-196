@@ -1,147 +1,29 @@
-# Highland PTO Platform
+# Highland PTO
 
-The repo now has three separate pieces:
+The public React website remains in `frontend/`, using its original components and styles. Developers can continue editing that source independently. Rua Hub manages published content and authorization; Authentik owns sign-in and identities. This application no longer uses Auth0.
 
-1. Public site in [frontend/](frontend)
-2. Protected admin portal in [admin/](admin)
-3. Shared API in [backend/](backend)
+## Content and administration
 
-The public site reads page content plus shared PTO settings from the API. The admin portal is its own app so it can be hosted separately. Auth0 is dormant by default, so the apps still run if Auth0 has not been configured yet.
+Use [Highland in Rua Hub](https://hub.rua-labs.com/cms?project=highland-pto-196) for page drafts, previews, publication, revisions and restoration. Contact details, committees and homepage board cards are managed through **Shared site settings**. The **Board page** is a separate published document. Save a draft, then explicitly publish the document you changed. Restoring a revision creates a draft; publish it to restore public content.
 
-## Layout
+[Users & Access](https://hub.rua-labs.com/settings/access) manages organization membership, project assignments, invitations and revocation. Invitation links require a matching verified authenticated email. No email delivery is configured; administrators share the displayed one-time link themselves. No passwords are stored by this application.
 
-```text
-.
-├── admin/
-├── backend/
-├── frontend/
-└── package.json
-```
+The old `admin/` application was already a notice linking to Rua Hub. It is now a small static compatibility landing page without a React/router runtime, API proxy or Auth0 settings. Existing admin URLs remain usable. Its old page editor and user management are not restored. The deployed landing page should be updated only after the Rua Hub replacement is released and verified.
 
-## Local dev
+## Backend retained
 
-Install dependencies from the repo root:
+`backend/` is still required by the public frontend. It exposes read-only compatibility `/api/pages`, `/api/pages/:slug`, `/api/site`, `/api/health` and `/rua-registry.json`. Published Rua Hub documents overlay the versioned JSON defaults, with last-good caching on upstream failure. This allows the public website to remain functional when the administrative frontend or upstream content service is unavailable. Public reads use no service tokens or administrator credentials. Legacy writes and `/api/users` return 410 and direct callers to Rua Hub. There is no private account provisioning, form processor or Auth0 management API in this backend. Do not shut it down while the frontend still depends on it.
 
-```bash
-npm install
-```
+Public content reads bypass intermediate caches. Returning to an open website tab refreshes published content. Unpublished pages/settings retain existing fallback content. Publishing does not rebuild or replace the visual design.
 
-Run the public site and API:
+## Development and deployment
 
-```bash
-npm run dev
-```
+Run `npm ci`, then `npm run dev` for public frontend plus compatibility API. `npm run build` builds the public frontend and static admin landing page; `npm run build:backend` checks backend syntax; `npm test --workspace backend` runs isolated backend tests. `npm run package:hub` rebuilds the original React/CSS renderer used by Puck in Rua Hub.
 
-Run the admin app separately:
+Deploy frontend, backend and compatibility admin separately using their existing Vercel project roots. Set `VITE_API_BASE_URL` on the public frontend to the compatibility backend origin, and `RUA_HUB_PUBLIC_URL` on the backend to the Rua Hub public API origin. The admin landing page needs no environment settings. Do not remove the backend or its fallback JSON. Existing production credentials should be removed from hosting configuration separately if obsolete; this change does not access or revoke provider accounts.
 
-```bash
-npm run dev:admin
-```
+## Verification and recovery
 
-API only:
+The 3.1 staging tests cover draft/save/publish, return-to-tab refresh, structured shared settings, revision restoration and republishing using the actual Highland React renderer. Original website CSS is compared in the browser tests. Production's existing Board publication was traced read-only through Rua Hub, the compatibility API and `/board`; its content already agreed. Homepage cards use the separately published settings document.
 
-```bash
-npm run dev:backend
-```
-
-Build both frontends:
-
-```bash
-npm run build
-```
-
-## What is editable
-
-The admin portal now manages:
-
-1. Page titles, summaries, content, and ordering
-2. Shared PTO contact email
-3. Committee contact names and emails
-4. Executive board names, roles, initials, and bios
-5. Footer links and key outbound URLs
-6. Admin user access (add/remove users in Auth0 database connection)
-
-Shared settings live in [backend/data/site.json](backend/data/site.json). Public page body text can reference `{{contactEmail}}`, `{{organizationName}}`, `{{district}}`, `{{location}}`, `{{donateUrl}}`, and `{{volunteerUrl}}`.
-
-## API
-
-Base URL: `http://localhost:4000/api`
-
-Public reads:
-
-1. `GET /health`
-2. `GET /pages`
-3. `GET /pages/:slug`
-4. `GET /site`
-
-Write endpoints:
-
-1. `POST /pages`
-2. `PUT /pages/:slug`
-3. `PUT /site`
-4. `GET /users` (admin only)
-5. `POST /users` (admin only)
-6. `DELETE /users/:id` (admin only)
-
-When `AUTH0_DOMAIN` and `AUTH0_AUDIENCE` are set, write endpoints require an Auth0 access token with the `admin:write` scope. Until then, auth middleware is bypassed.
-
-User management endpoints also require backend machine-to-machine credentials for the Auth0 Management API.
-
-## Auth0 setup
-
-1. Create an Auth0 application of type Single Page Application for the admin portal.
-2. Create an Auth0 API for this backend and set the audience to match `AUTH0_AUDIENCE`.
-3. Add the `admin:write` permission or scope to the API and enable RBAC if you want permission claims in the token.
-4. Add these callback URLs to the Auth0 app:
-   - `http://localhost:5174`
-   - your production admin URL
-5. Add logout URLs for the same hosts.
-6. Set environment variables:
-
-```text
-backend:
-   AUTH0_DOMAIN
-   AUTH0_AUDIENCE
-   AUTH0_M2M_CLIENT_ID
-   AUTH0_M2M_CLIENT_SECRET
-   AUTH0_DB_CONNECTION (optional, defaults to Username-Password-Authentication)
-admin: VITE_AUTH0_DOMAIN, VITE_AUTH0_CLIENT_ID, VITE_AUTH0_AUDIENCE, VITE_AUTH0_REDIRECT_URI
-frontend: VITE_ADMIN_URL, VITE_API_BASE_URL
-```
-
-7. Create an Auth0 Machine to Machine application for backend user management:
-    - Authorize it for the Auth0 Management API.
-    - Grant scopes: `read:users`, `create:users`, `delete:users`, `read:connections`.
-    - Copy that app's Client ID and Client Secret into `AUTH0_M2M_CLIENT_ID` and `AUTH0_M2M_CLIENT_SECRET`.
-8. Once Auth0 is configured, log into the admin portal and it will include an access token automatically when saving pages/site settings and managing user access. If Auth0 is not set up yet, the admin portal stays open and the backend allows writes without token checks.
-9. The backend resolves the actual Auth0 database connection before listing or creating users. If `AUTH0_DB_CONNECTION` does not match a real Auth0 database connection, the API returns a 503 with the available connection names.
-
-## Remove Public Signups (Auth0)
-
-To stop the public from creating accounts, disable signups in your Auth0 database connection:
-
-1. In Auth0 Dashboard, go to Authentication -> Database.
-2. Open your connection (usually `Username-Password-Authentication` or your `AUTH0_DB_CONNECTION` value).
-3. Turn on `Disable Sign Ups` (enabled means public sign up is blocked).
-4. Save changes.
-
-After this change:
-
-1. End users can still sign in if they already have an account.
-2. New accounts cannot be created from the public login screen.
-3. New users should be created from the Admin portal `User Access` tab.
-
-## Deployment
-
-1. Deploy [frontend/](frontend) as the public site.
-2. Deploy [admin/](admin) as a separate app or subdomain.
-3. Deploy [backend/](backend) as the API.
-4. Point each frontend at the backend with `VITE_API_BASE_URL`. Use the backend origin or the full `/api` URL; the app will normalize either form.
-5. Point the public site at the admin app with `VITE_ADMIN_URL`.
-
-## Notes
-
-1. The public app no longer contains the admin editor.
-2. Contact names and links are no longer hardcoded in the public JSX.
-3. Page body content can use template tokens so the PTO can change contact details centrally.
-4. Auth0 is optional for now and can be enabled later by setting the environment variables above.
+Roll back website refresh behavior by reverting the website release if necessary; public fallback files remain intact. Never use direct database writes or scoped service tokens to publish. Keep Rua Hub 3.1 authorization in place after external organization users are enabled; rolling its API back to 3.0 would remove the new access controls.
