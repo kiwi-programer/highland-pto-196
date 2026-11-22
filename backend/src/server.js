@@ -4,7 +4,7 @@ import morgan from 'morgan'
 import pagesRouter from './routes/pages.js'
 import siteRouter from './routes/site.js'
 import usersRouter from './routes/users.js'
-import { PORT } from './config.js'
+import { PORT, HUB_PUBLIC_URL } from './config.js'
 
 const app = express()
 
@@ -29,6 +29,8 @@ app.use((req, res, next) => {
 
   next()
 })
+
+app.get('/rua-registry.json', (_req,res)=>res.json({registryId:'highland-pto-196@1.0.0',schemaVersion:1,contentApiConfigured:Boolean(HUB_PUBLIC_URL)}))
 
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true, service: 'highland-pto-backend' })
