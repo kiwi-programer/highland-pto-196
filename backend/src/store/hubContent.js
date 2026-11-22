@@ -5,7 +5,7 @@ export function createPublishedReader(baseUrl,fetcher=fetch){
   if(!baseUrl)return null
   const url=new URL('/api/public/studio/highland-pto-196/pages/'+encodeURIComponent(key),baseUrl)
   try{
-   const response=await fetcher(url,{signal:AbortSignal.timeout(5000),redirect:'error'})
+   const response=await fetcher(url,{signal:AbortSignal.timeout(5000),redirect:'error',cache:'no-store'})
    if(response.status===404)return null
    if(!response.ok)throw new Error('Content unavailable')
    const value=await response.json()

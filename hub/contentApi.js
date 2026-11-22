@@ -41,6 +41,7 @@ async function request(path, options = {}) {
   })
 
   const response = await fetch(url, {
+    cache: "no-store",
     headers: {
       'Content-Type': 'application/json',
       ...(options.headers || {})
@@ -97,26 +98,4 @@ export function fetchSite() {
 
 export function fetchPageBySlug(slug) {
   return request(`/pages/${slug}`)
-}
-
-export function createPage(page) {
-  return request('/pages', {
-    method: 'POST',
-    body: JSON.stringify(page)
-  })
-}
-
-export function updatePage(slug, page) {
-  return request(`/pages/${slug}`, {
-    method: 'PUT',
-    body: JSON.stringify(page)
-  })
-}
-
-export function updateSite(site, token) {
-  return request('/site', {
-    method: 'PUT',
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-    body: JSON.stringify({ site })
-  })
 }

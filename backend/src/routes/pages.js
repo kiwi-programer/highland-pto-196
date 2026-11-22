@@ -2,6 +2,7 @@ import {Router} from 'express'
 import {readPages} from '../store/pageStore.js'
 import {published,legacyWrite} from '../store/hubContent.js'
 const router=Router()
+router.use((_req,res,next)=>{res.set('Cache-Control','no-store');next()})
 async function pages(){
  const data=await readPages()
  return Promise.all(data.pages.map(async p=>{
